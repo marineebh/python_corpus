@@ -73,3 +73,5 @@ class ArxivDocument(Document):
 
     def __str__(self):
         print(f"Le Document est un élément Arkiv publié par {self.auteur} le {self.date} ayant pour titre {self.titre} -- {self.texte} // url : {self.url}")
+
+        

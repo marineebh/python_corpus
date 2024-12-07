@@ -1,5 +1,10 @@
 # correction des profs
 
+import re
+import panda as pd
+
+
+
 from Classes import Author
 
 # =============== 2.7 : CLASSE CORPUS ===============
@@ -37,3 +42,39 @@ class Corpus:
         docs = list(sorted(docs, key=lambda x: x.titre.lower()))
 
         return "\n".join(list(map(str, docs)))
+    
+# ----------------- question 1.1 TD6 --------------------
+# texte = compilation des textes
+    def search(self, texte, keyword):
+        res = []
+        matches = re.finditer('\b{}\b'.format(re.escape(keyword)), texte, flags=re.IGNORECASE)
+        passages = [match.group(0) for match in matches]
+        if passages:
+            res.append({'passages': passages})
+        return res
+        
+    def concorde(self, texte, keyword, concorde=15):
+        res = []
+        matches = re.finditer('\b{}\b'.format(re.escape(keyword)), texte, flags=re.IGNORECASE)
+        for m in matches :
+            start = min(0, m.start()-concorde)
+            end = max(len(m), m.end()+concorde)
+            contexte = texte[start:end]
+            res.append({
+                'contexte_avant': contexte[:concorde],
+                'motif' : m.match(0),
+                'contexte_après' : contexte[concorde:]
+            })
+            df = pd.DataFrame(res)
+            return df
+
+    def nettoyer_texte(texte):
+        texte = texte.lower().sub('[^\w\s\n]', '', texte)
+
+    def creation_vocabulaire(self):
+        vocabulaire = set()
+        for doc in self.id2doc.values() :
+            texte_nettoye = self.nettoyer_texte(doc.texte)
+            mots = [mot for mot in re.split('\s+|[.,;:\'"!,()/]', texte_nettoye) if mot]
+            vocabulaire.update(mots)
+        return vocabulaire
