@@ -64,6 +64,7 @@ class ArxivDocument(Document):
     def getAuteur(self):
         return self.auteur
 
+#modifié :
     def setAuteur(self, author):
         if isinstance(author, list):
             self.auteur = [a for a in author if isinstance(a, Author)]

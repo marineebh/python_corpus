@@ -20,6 +20,7 @@ class Corpus:
         self.naut = 0
         self.vocab = {}
 
+    #ajout de doc au corpus
     def add(self, doc):
         if doc.auteur not in self.aut2id:
             self.naut += 1
@@ -30,11 +31,12 @@ class Corpus:
         self.ndoc += 1
         self.id2doc[self.ndoc] = doc
 
+    #affiche les docs du corpus triés
     def show(self, n_docs=-1, tri="abc"):
-        docs = list(self.id2doc.values())
+        docs = list(self.id2doc.values()) #récupère tous les docs
         if tri == "abc":  # Tri alphabétique
             docs = list(sorted(docs, key=lambda x: x.titre.lower()))[:n_docs]
-        elif tri == "123":  # Tri temporel
+        elif tri == "123":  # Tri chronologique
             docs = list(sorted(docs, key=lambda x: x.date))[:n_docs]
 
         print("\n".join(list(map(repr, docs))))
@@ -47,13 +49,13 @@ class Corpus:
     
     def organisation(self, saved_corpus):
         # Organisation des documents dans le corpus
-        for doc in saved_corpus.id2doc.values():  # Parcourir les documents
+        for doc in saved_corpus.id2doc.values():  # Parcours les documents
             # Vérification que le document possède un texte valide
             if not hasattr(doc, "texte") or not isinstance(doc.texte, str) or not doc.texte.strip():
-                continue  # Ignorer les documents sans texte valide
+                continue  # Ignore les docs sans texte valide
 
-            # Classification en Reddit ou ArXiv
-            if "reddit" in doc.url.lower():  # Identifier comme Reddit
+            # Classe les docs selon l'origine(reddit, arxiv)
+            if "reddit" in doc.url.lower():  # Identifie comme Reddit
                 # reddit_doc = RedditDocument(len(doc.texte.split()))  # Init avec un count exemple
                 reddit_doc = RedditDocument(comments=0)
                 reddit_doc.titre = doc.titre
@@ -63,7 +65,7 @@ class Corpus:
                 reddit_doc.texte = doc.texte
                 self.add(reddit_doc)
                 
-            elif "arxiv" in doc.url.lower():  # Identifier comme ArXiv
+            elif "arxiv" in doc.url.lower():  # Identifie comme ArXiv
                 arxiv_doc = ArxivDocument(doc.auteur)
                 arxiv_doc.titre = doc.titre
                 arxiv_doc.auteur = doc.auteur

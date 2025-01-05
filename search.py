@@ -11,19 +11,19 @@ class SearchEngine:
         try:
             self.corpus = corpus
             self.vocab, self.mat_TF, self.mat_TFxIDF, self.freq = self.creer_vocabulaire()
-        except Exception as e:
+        except Exception as e: #si erreur, affichage du probleme
             print(f"Erreur dans SearchEngine.__init__: {e}")
             import traceback
             traceback.print_exc()
 
     def nettoyer_texte(self, text):
         """Nettoyage du texte : minuscule et suppression de la ponctuation."""
-        text = text.texte.lower() 
+        text = text.texte.lower() #texte mis en minuscules
         if not isinstance(text, str):
             text = str(text)
         # text = re.sub(r'[^\w\s]', '', text)  # Supprime la ponctuation
-        text = re.sub(r'[^a-z0-9\s]', ' ', text)
-        text = re.sub(r'\s+', ' ', text).strip()
+        text = re.sub(r'[^a-z0-9\s]', ' ', text) #garde que lettres et chiffres, suppr le reste
+        text = re.sub(r'\s+', ' ', text).strip() #remplace plusieurs espaces par un seul
         return text
 
 
@@ -38,6 +38,7 @@ class SearchEngine:
         vecteur_requete = csr_matrix(vecteur_requete).toarray()
         scores = cosine_similarity(vecteur_requete, self.mat_TFxIDF.toarray()).flatten()
 
+        #tri des scores par ordre décroissant. Garde les meilleurs résultats (top_k)
         meilleurs_scores = sorted(
             [(doc_id, score) for doc_id, score in enumerate(scores)],
             key=lambda x: x[1], reverse=True
